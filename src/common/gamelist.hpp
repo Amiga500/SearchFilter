@@ -43,6 +43,8 @@ vector<GamelistEntry> loadGamelist(string path)
         };
         entries.push_back(entry);
     }
+
+    return entries;
 }
 
 

@@ -301,7 +301,7 @@ bool clearFilter(sqlite3 *db, string name)
 
 int countRootEntries(sqlite3 *db, string name)
 {
-    int rc, count;
+    int rc, count = 0;
     sqlite3_stmt *stmt;
     string table = TABLE_NAME(name);
     string sql = "SELECT count(*) FROM %Q WHERE ppath='.';";
