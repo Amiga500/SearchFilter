@@ -54,14 +54,15 @@ int main(int argc, char** argv)
         quit = display->requestFrame(frame_handler);
     }
 
-    delete display;
+    bool cancelled = kb->cancelled;
 
-    if (!kb->cancelled) {
+    if (!cancelled) {
         std::cout << "\n\nRESULT:" << std::endl;
         std::cout << kb->getValue() << std::endl;
     }
     
     delete kb;
+    delete display;
 
-    return kb->cancelled;
+    return cancelled;
 }

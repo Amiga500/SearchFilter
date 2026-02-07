@@ -10,7 +10,7 @@ class InputField
 private:
     Display* display;
     int all_selected = 0;
-    int cursor_pos = 0;
+    size_t cursor_pos = 0;
 
 public:
     std::string value = "";
