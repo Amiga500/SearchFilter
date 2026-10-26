@@ -26,10 +26,19 @@ using std::vector;
 
 namespace tools {
 
+// An app added to Favorites from the Apps section (type 3, launched from
+// /mnt/SDCARD/App/). It has no emulator, so the game checks below don't
+// apply to it.
+static bool isAppFavorite(const GameJsonEntry &entry)
+{
+    return entry.type == 3 && entry.launch.rfind("/mnt/SDCARD/App/", 0) == 0;
+}
+
 void fixFavorites(void)
 {
     vector<GameJsonEntry> favorites = loadGameJsonEntries(FAVORITES_PATH);
     vector<string> added_paths;
+    vector<string> added_apps;
     vector<string> added_labels;
     string contents = "";
 
@@ -43,6 +52,21 @@ void fixFavorites(void)
 
     for (auto &entry : favorites) {
         string emuname = basename(entry.emupath);
+
+        // Apps stay where they are, once each. They used to be dropped with
+        // the entries of unknown emulators: keymon runs favfix whenever
+        // favourite.json changes, so an app added to Favorites was gone
+        // again as soon as B or X was released.
+        if (isAppFavorite(entry)) {
+            if (std::count(added_apps.begin(), added_apps.end(), entry.launch) == 0) {
+                added_apps.push_back(entry.launch);
+                contents += entry.toJson() + "\n";
+            }
+            else {
+                std::cout << "Removed duplicate: " << entry.launch << std::endl;
+            }
+            continue;
+        }
 
         if (emu_configs_lookup.find(entry.emupath) == emu_configs_lookup.end())
             continue;
