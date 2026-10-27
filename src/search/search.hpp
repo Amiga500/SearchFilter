@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 #include <stdio.h>
 using std::string;
 using std::to_string;
@@ -117,6 +118,13 @@ void performSearch(Display* display, string keyword)
 
     vector<ConfigEmu> missing_caches;
 
+    // ROM folders already searched. An Expert (RApp) emulator usually reads
+    // the same folder, and the same cache, as one in Emu: searching it again
+    // listed every game twice (or more), under a second "[Expert]" system.
+    // Emu comes first, so the official emulator is the one kept; an Expert
+    // system with a folder of its own is still searched.
+    std::set<string> searched_rom_paths;
+
     string status_main = "0 games";
     string status_sub = "";
 
@@ -132,6 +140,9 @@ void performSearch(Display* display, string keyword)
         string cache_path = rom_path + "/" + CACHE_NAME(name);
 
         if (name.length() == 0)
+            continue;
+
+        if (!searched_rom_paths.insert(rom_path).second)
             continue;
 
         // System name
