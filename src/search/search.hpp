@@ -228,10 +228,12 @@ void performSearch(Display* display, string keyword)
     if (missing_caches.size() > 0) {
         string cache_missing_label = LAST_PREFIX "[Missing caches] (" + to_string(missing_caches.size()) + ")";
 
+        // A path of its own: "All systems" is the other folder with an empty
+        // path, and Open MainUI (1.0.10) opened "All systems" for both.
         db::insertRom(db, DB_NAME, {
             .label = cache_missing_label,
-            .path = "",
-            .imgpath = "",
+            .path = "/mnt/SDCARD/Roms",
+            .imgpath = "/mnt/SDCARD/Roms",
             .type = 1
         });
         total_lines++;
