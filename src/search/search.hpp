@@ -76,6 +76,14 @@ string totalTextMessage(int total)
     return to_string(total) + " game" + (total == 1 ? "" : "s");
 }
 
+// MainUI lists the result folders by name, so the Expert systems are put
+// at the end with a no-break space (U+00A0) in front: it is drawn like a
+// space, and sorts after every letter with case-sensitive sorting or not
+// ("[" alone sorts before the letters). "[Missing caches]" gets one too
+// and stays last: "M" sorts after the "E" of "[Expert]".
+#define LAST_PREFIX "\xc2\xa0"
+static const string EXPERT_PREFIX = LAST_PREFIX "[Expert] ";
+
 void performSearch(Display* display, string keyword)
 {
     if (exists(DB_PATH))
@@ -152,7 +160,7 @@ void performSearch(Display* display, string keyword)
             label = basename(config.rompath);
 
         if (dirname(emu_path) == "/mnt/SDCARD/RApp")
-            label += " [Expert]";
+            label = EXPERT_PREFIX + label;
 
         if (!exists(cache_path)) {
             missing_caches.push_back(config);
@@ -218,7 +226,7 @@ void performSearch(Display* display, string keyword)
     }
 
     if (missing_caches.size() > 0) {
-        string cache_missing_label = "~Missing caches (" + to_string(missing_caches.size()) + ")";
+        string cache_missing_label = LAST_PREFIX "[Missing caches] (" + to_string(missing_caches.size()) + ")";
 
         db::insertRom(db, DB_NAME, {
             .label = cache_missing_label,
@@ -232,7 +240,7 @@ void performSearch(Display* display, string keyword)
             string emu_path = dirname(config.path);
             string label = trim(config.label);
             if (dirname(emu_path) == "/mnt/SDCARD/RApp")
-                label += " [Expert]";
+                label = EXPERT_PREFIX + label;
 
             db::insertRom(db, DB_NAME, {
                 .label = label,
